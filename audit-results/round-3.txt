@@ -1,0 +1,51 @@
+
+[1m🔍 Blockhertz AI Auditor[0m
+Found 1 contract file(s) to audit.
+
+This will use up to [1m1[0m credit(s) from your Blockhertz account.
+(--yes passed — skipping confirmation.)
+
+Auditing 1 contract(s)...
+
+[1m📄 FixedToken_v2.sol[0m
+  Risk Score: [32m[1m35/100[0m (medium)
+  Findings: 8
+
+  [36m[1m[MEDIUM][0m drainFunds() lacks reentrancy protection
+  The drainFunds() function sends all contract ETH to an arbitrary recipient address via a low-level call but is not protected by the nonReentrant modifier. Although only the owner can call it, if the owner is a contract with a malicious fallback, or if the recipient is a contract that re-enters other functions (e.g., deposit), state inconsistencies could arise. More critically, if ownership is ever compromised, the lack of reentrancy guard compounds the risk.
+  [1mFix:[0m Add the nonReentrant modifier to drainFunds() for defense-in-depth: `function drainFunds(address payable recipient) public onlyOwner nonReentrant`.
+
+  [36m[1m[MEDIUM][0m drainFunds() accepts arbitrary recipient — no zero-address check
+  The drainFunds() function allows the owner to send the entire contract balance to any address, including address(0), which would permanently burn all funds. There is no validation that the recipient is a non-zero address or a trusted destination.
+  [1mFix:[0m Add `require(recipient != address(0), "Invalid recipient");` at the start of drainFunds(). Consider also restricting the recipient to a pre-approved address or requiring a two-step confirmation pattern.
+
+  [32m[1m[LOW][0m deposit() does not validate msg.value > 0
+  The deposit() function allows zero-value deposits, which emit a Deposited event with amount 0 and add a no-op entry to the balances mapping. This wastes gas and pollutes event logs, and could confuse off-chain indexers.
+  [1mFix:[0m Add `require(msg.value > 0, "Must deposit non-zero amount");` at the beginning of deposit().
+
+  [32m[1m[LOW][0m Centralization risk: single owner can drain all funds
+  The contract design gives the owner unrestricted ability to drain all user deposits at any time via drainFunds(). Users depositing funds are fully trusting the owner's key security. If the owner's private key is compromised, all funds are at risk.
+  [1mFix:[0m Consider implementing a timelock, multi-sig ownership (e.g., Gnosis Safe), or removing the drainFunds() function entirely if it is not a required feature. At minimum, document this trust assumption clearly for users.
+
+  [32m[1m[LOW][0m No receive() or fallback() function defined
+  The contract can receive ETH only through the deposit() function. Direct ETH transfers (e.g., from another contract or plain transfers) will revert because no receive() or fallback() is defined. This may be intentional but could cause integration issues.
+  [1mFix:[0m If direct ETH transfers should be supported, add a `receive() external payable { balances[msg.sender] += msg.value; emit Deposited(msg.sender, msg.value); }` function. If not, document this restriction explicitly.
+
+  [32m[1m[LOW][0m drainFunds() does not reset individual user balances
+  After drainFunds() empties the contract's ETH balance, the balances mapping still reflects the old user balances. Users could then call withdraw() and receive a failed transfer (since the contract has no ETH), but the state is misleading and could cause confusion or off-chain accounting errors.
+  [1mFix:[0m Consider emitting a clear event or implementing a mechanism to mark the contract as drained. Alternatively, iterate over depositors to zero out balances, though this is gas-intensive. At minimum, document that drainFunds() does not clear individual balance records.
+
+  [35m[1m[GAS][0m balances mapping could use custom errors instead of require strings
+  Using custom errors (introduced in Solidity 0.8.4) instead of require with string messages reduces deployment and runtime gas costs.
+  [1mFix:[0m Replace `require(amount > 0, "Amount must be greater than zero")` and similar statements with custom errors: `error ZeroAmount(); error InsufficientBalance(); error TransferFailed();` and use `if (amount == 0) revert ZeroAmount();` etc.
+
+  [35m[1m[GAS][0m Emit event before external call in withdraw() for gas efficiency
+  The Withdrawn event is emitted after the external call in withdraw(). While not a security issue due to the nonReentrant guard, emitting events before external calls is a minor best-practice that can marginally reduce confusion in traces.
+  [1mFix:[0m Move `emit Withdrawn(msg.sender, amount);` to before the external call, after the state update.
+
+  [1mSummary:[0m FixedToken_v2 correctly applies ReentrancyGuard to withdraw(), uses checks-effects-interactions pattern, and restricts drainFunds() to the owner. The primary concerns are: (1) drainFunds() lacks reentrancy protection and accepts arbitrary recipients including address(0), creating medium-severity risks; (2) a significant centralization risk exists since the owner can drain all user deposits at will without any timelock or multi-sig — this is the most impactful trust assumption in the contract; (3) after drainFunds() executes, user balance records remain non-zero in the mapping, creating a misleading state. Recommendations include adding nonReentrant to drainFunds(), validating the recipient address, implementing a timelock or multi-sig for ownership, adding a zero-value check to deposit(), and considering custom errors for gas savings.
+
+──────────────────────────────────────────────────
+[1mAudit finished:[0m 1 of 1 contract(s) audited, 8 finding(s)
+[1m[32m✓ All checks passed[0m
+
