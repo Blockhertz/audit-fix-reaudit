@@ -98,7 +98,7 @@ the defensive equivalent of Anthropic's SCONE-bench
 
 - [Blockhertz AI Smart Contract Auditor](https://blockhertz.com/tools/ai-auditor)
 - [hardhat-blockhertz](https://www.npmjs.com/package/hardhat-blockhertz) npm plugin
-- Claude Sonnet 4.5 (via Anthropic API)
+- Claude Sonnet 4.5 (via Blockhertz API)
 - Solidity 0.8.20
 - OpenZeppelin Contracts v5
 
