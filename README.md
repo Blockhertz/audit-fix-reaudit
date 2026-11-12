@@ -54,15 +54,17 @@ at scale.
 
 ## Files
 
+```
 contracts/
-VulnerableToken.sol # Round 1 — original vulnerable contract (95/100)
-FixedToken_v1.sol # Round 2 — reentrancy fixed, second-order bug introduced (95/100)
-FixedToken_v2.sol # Round 3 — all critical/high findings resolved (35/100)
+  VulnerableToken.sol     # Round 1 — original vulnerable contract (95/100)
+  FixedToken_v1.sol       # Round 2 — reentrancy fixed, second-order bug introduced (95/100)
+  FixedToken_v2.sol       # Round 3 — all critical/high findings resolved (35/100)
 
 audit-results/
-round-1.txt # Full AI audit output — Round 1
-round-2.txt # Full AI audit output — Round 2
-round-3.txt # Full AI audit output — Round 3
+  round-1.txt             # Full AI audit output — Round 1
+  round-2.txt             # Full AI audit output — Round 2
+  round-3.txt             # Full AI audit output — Round 3
+```
 
 
 ## How to Run
