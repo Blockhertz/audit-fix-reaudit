@@ -23,7 +23,7 @@ The iterative audit loop works as follows:
 
 **Tool:** [Blockhertz AI Smart Contract Auditor](https://blockhertz.com/tools/ai-auditor)  
 **Plugin:** [hardhat-blockhertz](https://www.npmjs.com/package/hardhat-blockhertz)  
-**Model:** Claude Sonnet 4.5  
+**Model:** Claude Sonnet 4.6  
 **Contract type:** ERC-20 style token with deposit/withdraw functionality
 
 ## Results
