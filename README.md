@@ -23,7 +23,7 @@ The iterative audit loop works as follows:
 
 **Tool:** [Blockhertz AI Smart Contract Auditor](https://blockhertz.com/tools/ai-auditor)  
 **Plugin:** [hardhat-blockhertz](https://www.npmjs.com/package/hardhat-blockhertz)  
-**Model:** Claude Sonnet 4.6  
+**Model:** Claude Sonnet 4.5  
 **Contract type:** ERC-20 style token with deposit/withdraw functionality
 
 ## Results
@@ -54,17 +54,15 @@ at scale.
 
 ## Files
 
-```
 contracts/
-  VulnerableToken.sol     # Round 1 — original vulnerable contract (95/100)
-  FixedToken_v1.sol       # Round 2 — reentrancy fixed, second-order bug introduced (95/100)
-  FixedToken_v2.sol       # Round 3 — all critical/high findings resolved (35/100)
+VulnerableToken.sol # Round 1 — original vulnerable contract (95/100)
+FixedToken_v1.sol # Round 2 — reentrancy fixed, second-order bug introduced (95/100)
+FixedToken_v2.sol # Round 3 — all critical/high findings resolved (35/100)
 
 audit-results/
-  round-1.txt             # Full AI audit output — Round 1
-  round-2.txt             # Full AI audit output — Round 2
-  round-3.txt             # Full AI audit output — Round 3
-```
+round-1.txt # Full AI audit output — Round 1
+round-2.txt # Full AI audit output — Round 2
+round-3.txt # Full AI audit output — Round 3
 
 
 ## How to Run
@@ -100,7 +98,7 @@ the defensive equivalent of Anthropic's SCONE-bench
 
 - [Blockhertz AI Smart Contract Auditor](https://blockhertz.com/tools/ai-auditor)
 - [hardhat-blockhertz](https://www.npmjs.com/package/hardhat-blockhertz) npm plugin
-- Claude Sonnet 4.6 (via Anthropic API)
+- Claude Sonnet 4.5 (via Anthropic API)
 - Solidity 0.8.20
 - OpenZeppelin Contracts v5
 
@@ -111,3 +109,16 @@ Muhammad Asif — Founder, [Blockhertz](https://blockhertz.com)
 ## License
 
 MIT
+
+## Score Variance Observation
+
+A follow-up audit of the same final contract (FixedToken_v2.sol) on 20 November 2026
+produced a score of 15/100, compared to 35/100 from the original experiment on
+12 November 2026 — identical code, no changes.
+
+This 20-point variance is expected behavior for LLM-based auditors running at
+temperature > 0. It reinforces the core finding of this experiment: audit scores
+alone are not a reliable verification method. The only trustworthy signal is
+whether the offensive agent can still extract funds.
+
+See OBSERVATIONS.md for the full record.
