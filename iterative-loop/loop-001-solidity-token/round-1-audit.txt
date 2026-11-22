@@ -1,0 +1,37 @@
+
+[1m🔍 Blockhertz AI Auditor[0m
+Found 1 contract file(s) to audit.
+
+This will use up to [1m1[0m credit(s) from your Blockhertz account.
+(--yes passed — skipping confirmation.)
+
+Auditing 1 contract(s)...
+
+[1m📄 VulnerableToken.sol[0m
+  Risk Score: [31m[1m95/100[0m (critical)
+  Findings: 4
+
+  [31m[1m[CRITICAL][0m Reentrancy in withdraw() — state updated after external call
+  In withdraw(), the external call `msg.sender.call{value: amount}("")` is made before `balances[msg.sender] -= amount`. A malicious contract can re-enter withdraw() in its receive()/fallback() function before the balance is decremented, repeatedly draining the contract's ETH until it is empty. This is a classic checks-effects-interactions violation.
+  [1mFix:[0m Apply the checks-effects-interactions pattern: decrement `balances[msg.sender] -= amount` BEFORE the external call. Alternatively, use OpenZeppelin's ReentrancyGuard and add the `nonReentrant` modifier to withdraw(). Both mitigations should ideally be applied together.
+
+  [32m[1m[LOW][0m No withdrawal amount validation (zero-amount withdraw allowed)
+  withdraw() does not check that `amount > 0`. A caller can invoke withdraw(0), which succeeds trivially, makes an external call with zero value, and wastes gas. While not directly exploitable for fund loss, it is unnecessary overhead and could interact poorly with future logic.
+  [1mFix:[0m Add `require(amount > 0, "Amount must be > 0");` as the first check inside withdraw().
+
+  [32m[1m[LOW][0m getBalance() returns contract balance, not caller's balance
+  The function is named getBalance() but returns the total ETH held by the contract rather than the caller's individual balance. This naming is misleading and could cause off-chain integrations or UIs to display incorrect per-user balance information.
+  [1mFix:[0m Rename the function to getTotalBalance() or getContractBalance() to accurately reflect what it returns, or change its implementation to return `balances[msg.sender]` if per-user balance is the intent.
+
+  [35m[1m[GAS][0m Cache balances[msg.sender] in a local variable
+  withdraw() reads `balances[msg.sender]` twice from storage (once in require, once in the subtraction). Each SLOAD costs 100 gas (warm) or 2100 gas (cold). Caching the value in a local uint256 variable reduces storage reads.
+  [1mFix:[0m Introduce `uint256 currentBalance = balances[msg.sender];` at the top of withdraw(), use it in the require check, and write back the decremented value in a single SSTORE: `balances[msg.sender] = currentBalance - amount;`.
+
+  [1mSummary:[0m The contract contains a critical reentrancy vulnerability in withdraw(): the external ETH transfer is performed before the caller's balance is decremented, allowing a malicious contract to recursively call withdraw() and drain all ETH held by the contract. This must be fixed immediately by moving the balance decrement before the external call (checks-effects-interactions pattern) and/or adding a reentrancy guard. Additionally, the function lacks a zero-amount guard, and getBalance() has a misleading name. Overall risk is rated 95/100 — this contract should not be deployed or used in its current form.
+
+──────────────────────────────────────────────────
+[1mAudit finished:[0m 1 of 1 contract(s) audited, 4 finding(s)
+
+[1m[31m✗ Build failed:[0m Found high+ severity issues.
+  Fix issues or set blockhertz.failOn = 'none'
+
