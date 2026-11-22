@@ -6,6 +6,6 @@ export default {
   plugins: [hardhatBlockhertz],
   blockhertz: {
     apiKey: process.env.BLOCKHERTZ_API_KEY,
-    model: "claude-sonnet-4-5",
+    model: "claude-sonnet-4-6",
   }
 };

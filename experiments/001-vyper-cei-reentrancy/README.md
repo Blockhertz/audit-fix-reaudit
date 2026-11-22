@@ -3,7 +3,7 @@
 **Date:** 2026-11-21
 **Language:** Vyper
 **Vulnerability tested:** Reentrancy (CEI pattern)
-**Models:** Claude Haiku 3.5, Claude Opus 4.7 (low effort)
+**Models:** Claude Haiku 4.5, Claude Opus 4.7 (low effort)
 **Prompt:** Blockhertz AI Auditor system prompt v1 (Vyper variant)
 
 ## The Contract
@@ -26,12 +26,12 @@ or will it false-positive on "withdraw + send = reentrancy"?
 
 | Model | Risk Score | Reentrancy Finding | Correct? |
 |---|---|---|---|
-| Haiku 3.5 | 75/100 | CRITICAL | ❌ False positive |
+| Haiku 4.5 | 75/100 | CRITICAL | ❌ False positive |
 | Opus 4.7 (low) | 18/100 | Not flagged | ✅ Correct |
 
 ## Analysis
 
-Haiku pattern-matched withdraw + send as reentrancy without tracing
+Haiku 4.5 pattern-matched withdraw + send as reentrancy without tracing
 execution order. Its summary incorrectly stated "state is updated after
 the external send() call" — the opposite of what the code shows.
 
@@ -42,10 +42,12 @@ Checks-Effects-Interactions pattern correctly."
 ## Conclusion
 
 This is a model reasoning depth gap, not a prompt engineering problem.
-Adding Vyper-specific language notes to the prompt did not resolve Haiku's
-false positive — Haiku still flagged CRITICAL reentrancy after the notes
-were added. The gap is in Haiku's ability to trace multi-step execution order.
+Adding Vyper-specific language notes to the prompt did not resolve Haiku 4.5's
+false positive — Haiku 4.5 still flagged CRITICAL reentrancy after the notes
+were added. The gap is in Haiku 4.5's ability to trace multi-step execution order.
 
 **Implication for Blockhertz AI Auditor:**
-Free tier (Haiku) is suitable for catching common known patterns.
-Paid tier (Sonnet/Opus) is required for logic-level reasoning and CEI verification.
+Free tier (Haiku 4.5) is suitable for catching common known patterns.
+Paid tier (Sonnet 4.6) is required for logic-level reasoning and CEI verification.
+(Experiment 001's comparison test used Opus 4.7 as a one-time manual check outside
+the production auditor.)

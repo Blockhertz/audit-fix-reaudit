@@ -1,5 +1,5 @@
 {
-  "model": "claude-haiku-3-5",
+  "model": "claude-haiku-4-5-20251001",
   "effort": "default",
   "timestamp": "2026-11-21T12:09:16.451Z",
   "riskScore": 75,
@@ -8,7 +8,7 @@
       "severity": "CRITICAL",
       "title": "Reentrancy vulnerability in withdraw function",
       "lineNumber": 21,
-      "note": "FALSE POSITIVE — Haiku incorrectly identified reentrancy. Contract correctly follows CEI pattern. Balance is decremented before send."
+      "note": "FALSE POSITIVE — Haiku 4.5 incorrectly identified reentrancy. Contract correctly follows CEI pattern. Balance is decremented before send."
     },
     {
       "severity": "HIGH",

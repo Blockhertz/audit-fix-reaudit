@@ -17,7 +17,7 @@ Part of a research proposal submitted to the Anthropic AI Residency (November 20
 
 | # | Vulnerability | Language | Models | Result |
 |---|---|---|---|---|
-| 001 | CEI Reentrancy (false positive) | Vyper | Haiku 3.5 vs Opus 4.7 | Haiku: CRITICAL ❌ / Opus: PASS ✅ |
+| 001 | CEI Reentrancy (false positive) | Vyper | Haiku 4.5 vs Opus 4.7 | Haiku: CRITICAL ❌ / Opus: PASS ✅ |
 
 Full details → [`experiments/001-vyper-cei-reentrancy/`](experiments/001-vyper-cei-reentrancy/)
 
@@ -27,7 +27,7 @@ Full details → [`experiments/001-vyper-cei-reentrancy/`](experiments/001-vyper
 The AI auditor caught it in Round 2. Without re-auditing, this would have deployed
 to mainnet undetected.
 
-**Model reasoning gap:** Haiku 3.5 flags CEI-correct Vyper contracts as CRITICAL
+**Model reasoning gap:** Haiku 4.5 flags CEI-correct Vyper contracts as CRITICAL
 reentrancy. Opus 4.7 at low effort correctly identifies the CEI pattern (risk score
 18/100 vs 75/100). This gap is not fixable by prompt engineering alone.
 
@@ -61,7 +61,7 @@ See [`scone-bench-context/`](scone-bench-context/) for full background.
 
 - [Blockhertz AI Smart Contract Auditor](https://blockhertz.com/tools/ai-auditor)
 - [hardhat-blockhertz](https://www.npmjs.com/package/hardhat-blockhertz)
-- Claude Sonnet 4.5 / Haiku 3.5 / Opus 4.7 (via Anthropic API)
+- Claude Sonnet 4.6 / Haiku 4.5 / Opus 4.7 (via Anthropic API)
 - Solidity 0.8.20, Vyper 0.3.x
 - OpenZeppelin Contracts v5
 
