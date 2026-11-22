@@ -5,7 +5,13 @@ iterative audit-fix-reaudit loops, model comparison, and false positive/negative
 cataloging across Solidity, Vyper, Rust, and Move.
 
 Built alongside [Blockhertz AI Smart Contract Auditor](https://blockhertz.com/tools/ai-auditor).
-Part of a research proposal submitted to the Anthropic AI Residency (November 2026).
+
+This repository represents independent research into AI-assisted smart contract
+security, conducted with consumer API access as a proof of concept. The methodology
+is designed as a defensive counterpart to offensive benchmarks like Anthropic's
+SCONE-bench — measuring not whether AI can find vulnerabilities, but whether it
+can fix them iteratively and how reasoning depth affects false positive rates
+across model tiers.
 
 ## Iterative Loop Results
 

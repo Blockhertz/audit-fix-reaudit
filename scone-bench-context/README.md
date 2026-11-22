@@ -35,11 +35,9 @@ This repo proposed closed loop:
 AI finds vulnerability → AI suggests fix → developer applies fix →
 offensive agent re-tests → pass = offensive agent can no longer extract funds
 
-## Research Proposal
+## Research Question
 
-Full research proposal submitted to Anthropic AI Residency (November 2026).
-
-Research question: Can iterative AI-assisted remediation loops —
+Can iterative AI-assisted remediation loops —
 audit, fix, re-audit — systematically close smart contract vulnerabilities
 without the AI ever generating working exploits, and do current LLMs
 reliably detect second-order vulnerabilities introduced by developer fixes?
