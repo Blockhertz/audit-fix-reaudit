@@ -1,86 +1,49 @@
 # audit-fix-reaudit
 
-A controlled experiment demonstrating the iterative AI-assisted smart contract
-audit loop — audit → fix → re-audit — using Claude Sonnet 4.5 and the
-Blockhertz AI Smart Contract Auditor.
+A living research repository studying AI-assisted smart contract security —
+iterative audit-fix-reaudit loops, model comparison, and false positive/negative
+cataloging across Solidity, Vyper, Rust, and Move.
 
-**Results: 95 → 95 → 35/100**
+Built alongside [Blockhertz AI Smart Contract Auditor](https://blockhertz.com/tools/ai-auditor).
+Part of a research proposal submitted to the Anthropic AI Residency (November 2026).
 
-## Overview
+## Iterative Loop Results
 
-Most developers audit their smart contract once, apply fixes, and deploy to
-mainnet. This experiment tests whether that assumption is safe — and shows
-it is not.
+| # | Contract | Language | Rounds | Final Score | Key Finding |
+|---|---|---|---|---|---|
+| 001 | VulnerableToken | Solidity | 3 | 35/100 | Second-order vulnerability introduced by fix — caught in Round 2 |
 
-The iterative audit loop works as follows:
+## Experiments
 
-1. **Audit** — scan the contract for vulnerabilities
-2. **Fix** — apply the suggested fixes
-3. **Re-audit** — scan again to verify the fix did not introduce new vulnerabilities
-4. **Repeat** — until the contract reaches a safe risk score
+| # | Vulnerability | Language | Models | Result |
+|---|---|---|---|---|
+| 001 | CEI Reentrancy (false positive) | Vyper | Haiku 3.5 vs Opus 4.7 | Haiku: CRITICAL ❌ / Opus: PASS ✅ |
 
-## Experiment
+Full details → [`experiments/001-vyper-cei-reentrancy/`](experiments/001-vyper-cei-reentrancy/)
 
-**Tool:** [Blockhertz AI Smart Contract Auditor](https://blockhertz.com/tools/ai-auditor)  
-**Plugin:** [hardhat-blockhertz](https://www.npmjs.com/package/hardhat-blockhertz)  
-**Model:** Claude Sonnet 4.5  
-**Contract type:** ERC-20 style token with deposit/withdraw functionality
+## Key Findings
 
-## Results
+**Iterative loop:** A fix applied in Round 1 introduced a second-order vulnerability.
+The AI auditor caught it in Round 2. Without re-auditing, this would have deployed
+to mainnet undetected.
 
-| Round | Contract | Score | Severity | Key Finding |
-|-------|----------|-------|----------|-------------|
-| 1 | VulnerableToken.sol | 95/100 | Critical | Reentrancy in withdraw() — state updated after external call |
-| 2 | FixedToken_v1.sol | 95/100 | Critical | Second-order vulnerability: unprotected drainFunds() introduced during fix |
-| 3 | FixedToken_v2.sol | 35/100 | Medium | No critical or high findings — ✓ All checks passed |
+**Model reasoning gap:** Haiku 3.5 flags CEI-correct Vyper contracts as CRITICAL
+reentrancy. Opus 4.7 at low effort correctly identifies the CEI pattern (risk score
+18/100 vs 75/100). This gap is not fixable by prompt engineering alone.
 
-## Key Finding
-
-The fix applied in Round 1 introduced a **second-order vulnerability** — a new
-critical bug created by the fix process itself. The AI auditor caught it in
-Round 2. Without re-auditing, this vulnerability would have been deployed to
-mainnet undetected.
-
-Round 3 applied all recommended fixes. The contract passed all critical and
-high severity checks and was deemed safe to deploy.
-
-## Observation
-
-AI audit output shows some variance between runs — different run sessions
-produced slightly different finding descriptions for the same contract, while
-the risk score and core findings remained consistent. This suggests that
-measuring variance across runs is itself a research question worth studying
-at scale.
-
-## Files
-
-contracts/
-VulnerableToken.sol # Round 1 — original vulnerable contract (95/100)
-FixedToken_v1.sol # Round 2 — reentrancy fixed, second-order bug introduced (95/100)
-FixedToken_v2.sol # Round 3 — all critical/high findings resolved (35/100)
-
-audit-results/
-round-1.txt # Full AI audit output — Round 1
-round-2.txt # Full AI audit output — Round 2
-round-3.txt # Full AI audit output — Round 3
-
+**Score variance:** Same contract (FixedToken_v2.sol), two runs, 20-point difference
+(35/100 vs 15/100). Audit scores alone are not a reliable verification method.
+The only trustworthy signal is whether an offensive agent can still extract funds.
 
 ## How to Run
 
 ```bash
-# Clone the repo
 git clone https://github.com/Blockhertz/audit-fix-reaudit
 cd audit-fix-reaudit
-
-# Install dependencies
 npm install
-
-# Add your Blockhertz API key
 cp .env.example .env
-# Edit .env and add your BLOCKHERTZ_API_KEY
-# Get a free key at: https://blockhertz.com/tools/dashboard/api-keys
+# Add your BLOCKHERTZ_API_KEY from blockhertz.com/tools/dashboard/api-keys
 
-# Run audit on each contract
 npx hardhat blockhertz-audit --contract contracts/VulnerableToken.sol --yes true
 npx hardhat blockhertz-audit --contract contracts/FixedToken_v1.sol --yes true
 npx hardhat blockhertz-audit --contract contracts/FixedToken_v2.sol --yes true
@@ -88,18 +51,18 @@ npx hardhat blockhertz-audit --contract contracts/FixedToken_v2.sol --yes true
 
 ## Context
 
-This experiment is part of a research proposal submitted to the
-Anthropic Research Residency (November 2026), proposing to run this
-iterative loop across hundreds of real contracts at scale — building
-the defensive equivalent of Anthropic's SCONE-bench
-("AI Agents Find $4.6M in Blockchain Smart Contract Exploits").
+Anthropic's SCONE-bench proved AI can find and exploit smart contract
+vulnerabilities (offensive side). This repo builds the defensive equivalent —
+proving AI can fix them, using the same measurement methodology.
+
+See [`scone-bench-context/`](scone-bench-context/) for full background.
 
 ## Tools Used
 
 - [Blockhertz AI Smart Contract Auditor](https://blockhertz.com/tools/ai-auditor)
-- [hardhat-blockhertz](https://www.npmjs.com/package/hardhat-blockhertz) npm plugin
-- Claude Sonnet 4.5 (via Anthropic API)
-- Solidity 0.8.20
+- [hardhat-blockhertz](https://www.npmjs.com/package/hardhat-blockhertz)
+- Claude Sonnet 4.5 / Haiku 3.5 / Opus 4.7 (via Anthropic API)
+- Solidity 0.8.20, Vyper 0.3.x
 - OpenZeppelin Contracts v5
 
 ## Author
@@ -109,16 +72,3 @@ Muhammad Asif — Founder, [Blockhertz](https://blockhertz.com)
 ## License
 
 MIT
-
-## Score Variance Observation
-
-A follow-up audit of the same final contract (FixedToken_v2.sol) on 20 November 2026
-produced a score of 15/100, compared to 35/100 from the original experiment on
-12 November 2026 — identical code, no changes.
-
-This 20-point variance is expected behavior for LLM-based auditors running at
-temperature > 0. It reinforces the core finding of this experiment: audit scores
-alone are not a reliable verification method. The only trustworthy signal is
-whether the offensive agent can still extract funds.
-
-See OBSERVATIONS.md for the full record.

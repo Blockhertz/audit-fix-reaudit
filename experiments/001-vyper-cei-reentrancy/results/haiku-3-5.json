@@ -1,0 +1,30 @@
+{
+  "model": "claude-haiku-3-5",
+  "effort": "default",
+  "timestamp": "2026-11-21T12:09:16.451Z",
+  "riskScore": 75,
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "title": "Reentrancy vulnerability in withdraw function",
+      "lineNumber": 21,
+      "note": "FALSE POSITIVE — Haiku incorrectly identified reentrancy. Contract correctly follows CEI pattern. Balance is decremented before send."
+    },
+    {
+      "severity": "HIGH",
+      "title": "No access control on withdraw function",
+      "lineNumber": 18
+    },
+    {
+      "severity": "MEDIUM",
+      "title": "Unchecked send return value",
+      "lineNumber": 21
+    },
+    {
+      "severity": "GAS",
+      "title": "Redundant balance check before subtraction",
+      "lineNumber": 19
+    }
+  ],
+  "summary": "Incorrectly concluded state is updated after external call. False positive on reentrancy."
+}
