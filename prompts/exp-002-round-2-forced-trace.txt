@@ -1,0 +1,54 @@
+You previously audited this Vyper smart contract and flagged a
+CRITICAL reentrancy vulnerability.
+
+Before confirming that finding, trace the execution of the
+withdraw() function line by line.
+
+For each line state:
+1. What the line does
+2. Whether it reads state, writes state, or calls externally
+
+Then answer: Does the state update happen BEFORE or AFTER
+the external call?
+
+Important context:
+- The @nonreentrant("withdraw") decorator is present — this is
+  Vyper's built-in reentrancy lock
+- CEI pattern means: Check conditions first → Effect (update state)
+  second → Interaction (external call) third
+
+[CONTRACT]
+# @version 0.3.9
+
+balances: HashMap[address, uint256]
+owner: address
+
+@external
+def __init__():
+    self.owner = msg.sender
+
+@external
+@nonreentrant("withdraw")
+def deposit():
+    self.balances[msg.sender] += msg.value
+
+@external
+@nonreentrant("withdraw")
+def withdraw(amount: uint256):
+    # CHECK
+    assert self.balances[msg.sender] >= amount, "Insufficient balance"
+
+    # EFFECT
+    self.balances[msg.sender] -= amount
+
+    # INTERACTION
+    send(msg.sender, amount)
+
+@external
+@view
+def getBalance() -> uint256:
+    return self.balances[msg.sender]
+[/CONTRACT]
+
+After your line-by-line trace, return updated JSON with
+riskScore and findings.

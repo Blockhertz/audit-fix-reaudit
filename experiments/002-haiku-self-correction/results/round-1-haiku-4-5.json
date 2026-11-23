@@ -1,0 +1,18 @@
+{
+  "experiment": "002-haiku-self-correction",
+  "round": 1,
+  "model": "claude-haiku-4-5-20251001",
+  "auditor": "Blockhertz AI Auditor",
+  "date": "2026-11-23",
+  "riskScore": 75,
+  "findings": {
+    "critical": 1,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "gasOptimizations": 0
+  },
+  "critical_finding": "Reentrancy vulnerability in withdraw() — FALSE POSITIVE. Model ignored @nonreentrant decorator and CEI pattern.",
+  "prompt_used": "exp-002-round-1-cold-audit.txt",
+  "notes": "Cold audit with no hints. Model flagged reentrancy as CRITICAL despite @nonreentrant guard and correct CEI order. Confirmed false positive."
+}

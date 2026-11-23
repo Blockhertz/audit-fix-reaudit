@@ -1,0 +1,18 @@
+{
+  "experiment": "002-haiku-self-correction",
+  "round": 3,
+  "model": "claude-haiku-5-5",
+  "auditor": "Blockhertz AI Auditor",
+  "date": "2026-11-23",
+  "riskScore": 35,
+  "findings": {
+    "critical": 0,
+    "high": 2,
+    "medium": 0,
+    "low": 3,
+    "gasOptimizations": 0
+  },
+  "self_corrected": false,
+  "prompt_used": "exp-002-round-3-cold-audit.txt",
+  "notes": "Cold audit on upgraded model Haiku 5.5. No reentrancy false positive. Found real compile errors: missing @payable on deposit(), @external on __init__. Generation improvement confirmed."
+}

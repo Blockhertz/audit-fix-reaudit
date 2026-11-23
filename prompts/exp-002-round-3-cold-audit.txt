@@ -1,0 +1,41 @@
+Blockhertz AI Auditor system prompt v1 (Vyper variant)
+Built by: buildAuditorSystemPrompt('Vyper') in src/lib/auditor/shared.ts
+
+User message sent to model:
+
+[CONTRACT]
+# @version 0.3.9
+
+balances: HashMap[address, uint256]
+owner: address
+
+@external
+def __init__():
+    self.owner = msg.sender
+
+@external
+@nonreentrant("withdraw")
+def deposit():
+    self.balances[msg.sender] += msg.value
+
+@external
+@nonreentrant("withdraw")
+def withdraw(amount: uint256):
+    # CHECK
+    assert self.balances[msg.sender] >= amount, "Insufficient balance"
+
+    # EFFECT
+    self.balances[msg.sender] -= amount
+
+    # INTERACTION
+    send(msg.sender, amount)
+
+@external
+@view
+def getBalance() -> uint256:
+    return self.balances[msg.sender]
+[/CONTRACT]
+
+Note: Full system prompt lives in blockhertz rebuild/v2 repo at
+src/lib/auditor/shared.ts — AUDITOR_SYSTEM_PROMPT_BASE +
+AUDITOR_LANGUAGE_NOTES.Vyper

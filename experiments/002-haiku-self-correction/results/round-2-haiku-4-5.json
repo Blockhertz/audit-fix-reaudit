@@ -1,0 +1,18 @@
+{
+  "experiment": "002-haiku-self-correction",
+  "round": 2,
+  "model": "claude-haiku-4-5-20251001",
+  "auditor": "Blockhertz AI Auditor",
+  "date": "2026-11-23",
+  "riskScore": 45,
+  "findings": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 2,
+    "gasOptimizations": 1
+  },
+  "self_corrected": true,
+  "prompt_used": "exp-002-round-2-forced-trace.txt",
+  "notes": "Forced line-by-line trace of withdraw(). Model self-corrected: CRITICAL reentrancy finding dropped to zero. State update confirmed BEFORE external call. @nonreentrant acknowledged correctly."
+}
