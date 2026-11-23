@@ -24,8 +24,9 @@ across model tiers.
 | # | Vulnerability | Language | Models | Result |
 |---|---|---|---|---|
 | 001 | CEI Reentrancy (false positive) | Vyper | Haiku 4.5 vs Opus 4.7 | Haiku: CRITICAL ❌ / Opus: PASS ✅ |
+| 002 | Haiku Self-Correction via Forced Trace | Vyper | Haiku 4.5 (×2) + Haiku 5.5 | Haiku 4.5 self-corrected 75→45. Haiku 5.5 no FP (35). |
 
-Full details → [`experiments/001-vyper-cei-reentrancy/`](experiments/001-vyper-cei-reentrancy/)
+Full details → [`experiments/001-vyper-cei-reentrancy/`](experiments/001-vyper-cei-reentrancy/) · [`experiments/002-haiku-self-correction/`](experiments/002-haiku-self-correction/)
 
 ## Key Findings
 
